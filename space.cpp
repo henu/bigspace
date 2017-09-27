@@ -25,7 +25,7 @@ Layer* Space::createLayer(unsigned zoom, float near_clip, float far_clip)
 		throw std::runtime_error("Layer zoom must be power of two!");
 	}
 
-	Urho3D::SharedPtr<Layer> new_layer(new Layer(context_, near_clip, far_clip));
+	Urho3D::SharedPtr<Layer> new_layer(new Layer(this, zoom, near_clip, far_clip));
 	layers[zoom] = new_layer;
 
 	return new_layer;
@@ -57,6 +57,14 @@ void Space::destroyViewports()
 	for (Layers::iterator i = layers.begin(); i != layers.end(); ++ i) {
 		Layer* layer = i->second;
 		layer->destroyViewport();
+	}
+}
+
+void Space::updateCameras()
+{
+	for (Layers::iterator i = layers.begin(); i != layers.end(); ++ i) {
+		Layer* layer = i->second;
+		layer->updateCamera(camera_pos, camera_cubepos, camera_rot);
 	}
 }
 

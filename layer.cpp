@@ -1,5 +1,7 @@
 #include "layer.hpp"
 
+#include "space.hpp"
+
 #include <Urho3D/Graphics/Camera.h>
 #include <Urho3D/Graphics/Model.h>
 #include <Urho3D/Graphics/Octree.h>
@@ -9,10 +11,26 @@
 namespace BigSpace
 {
 
-Layer::Layer(Urho3D::Context* context, float near_clip, float far_clip) :
-Urho3D::Object(context)
+inline void zoomDiv(int& result_i, float& result_f, int i, float f, int zoom, float cube_width)
 {
-	scene = new Urho3D::Scene(context);
+	if (i >= 0) {
+		result_i = i / zoom;
+		int i_left = i % zoom;
+		result_f = f / zoom + i_left * cube_width / zoom;
+	} else {
+		int i_flipped = -i - 1;
+		result_i = -(i_flipped / zoom + 1);
+		int i_left = i_flipped % zoom;
+		result_f = f / zoom + cube_width - (i_left + 1) * cube_width / zoom;
+	}
+}
+
+Layer::Layer(Space* space, unsigned zoom, float near_clip, float far_clip) :
+Urho3D::Object(space->GetContext()),
+space(space),
+zoom(zoom)
+{
+	scene = new Urho3D::Scene(context_);
 	scene->CreateComponent<Urho3D::Octree>();
 
 	camera_node = scene->CreateChild("Camera");
@@ -42,6 +60,24 @@ Urho3D::Viewport* Layer::getOrCreateViewport()
 void Layer::destroyViewport()
 {
 	camera_viewport = NULL;
+}
+
+void Layer::updateCamera(Urho3D::Vector3 const& camera_pos, Urho3D::IntVector3 const& camera_cubepos, Urho3D::Quaternion const& camera_rot)
+{
+	// Apply zooming
+	Urho3D::IntVector3 zoomed_cubepos;
+	Urho3D::Vector3 zoomed_pos;
+	zoomDiv(zoomed_cubepos.x_, zoomed_pos.x_, camera_cubepos.x_, camera_pos.x_, zoom, space->getCubeWidth());
+	zoomDiv(zoomed_cubepos.y_, zoomed_pos.y_, camera_cubepos.y_, camera_pos.y_, zoom, space->getCubeWidth());
+	zoomDiv(zoomed_cubepos.z_, zoomed_pos.z_, camera_cubepos.z_, camera_pos.z_, zoom, space->getCubeWidth());
+
+	if (zoomed_cubepos != camera_zoomed_origin) {
+		camera_zoomed_origin = zoomed_cubepos;
+// TODO: Move nodes of Cubes!
+	}
+
+	camera_node->SetPosition(zoomed_pos);
+	camera_node->SetRotation(camera_rot);
 }
 
 }

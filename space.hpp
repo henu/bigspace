@@ -20,11 +20,15 @@ public:
 
 	Space(Urho3D::Context* context, float cube_width);
 
+	inline float getCubeWidth() const { return cube_width; }
+
 	Layer* createLayer(unsigned zoom, float near_clip, float far_clip);
 
 	// TODO: Call these automatically!
 	void createViewports();
 	void destroyViewports();
+
+	void updateCameras();
 
 private:
 

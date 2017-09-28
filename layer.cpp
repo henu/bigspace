@@ -1,6 +1,7 @@
 #include "layer.hpp"
 
 #include "space.hpp"
+#include "utils.hpp"
 
 #include <Urho3D/Graphics/Camera.h>
 #include <Urho3D/Graphics/Model.h>
@@ -10,20 +11,6 @@
 
 namespace BigSpace
 {
-
-inline void zoomDiv(int& result_i, float& result_f, int i, float f, int zoom, float cube_width)
-{
-	if (i >= 0) {
-		result_i = i / zoom;
-		int i_left = i % zoom;
-		result_f = f / zoom + i_left * cube_width / zoom;
-	} else {
-		int i_flipped = -i - 1;
-		result_i = -(i_flipped / zoom + 1);
-		int i_left = i_flipped % zoom;
-		result_f = f / zoom + cube_width - (i_left + 1) * cube_width / zoom;
-	}
-}
 
 Layer::Layer(Space* space, unsigned zoom, float near_clip, float far_clip) :
 Urho3D::Object(space->GetContext()),
@@ -47,6 +34,14 @@ void Layer::createSkybox(Urho3D::Material* skybox_mat)
 	Urho3D::Skybox* skybox = skybox_node->CreateComponent<Urho3D::Skybox>();
 	skybox->SetModel(resources->GetResource<Urho3D::Model>("Models/Box.mdl"));
 	skybox->SetMaterial(skybox_mat);
+}
+
+NodeWrapper* Layer::createNodeWrapper()
+{
+	Urho3D::SharedPtr<NodeWrapper> nodewrapper(new NodeWrapper(this, scene->CreateChild()));
+	nodewrappers.Push(nodewrapper);
+	nodewrapper->updateActualPosition(camera_zoomed_origin, zoom, space->getCubeWidth());
+	return nodewrapper;
 }
 
 Urho3D::Viewport* Layer::getOrCreateViewport()
@@ -73,7 +68,12 @@ void Layer::updateCamera(Urho3D::Vector3 const& camera_pos, Urho3D::IntVector3 c
 
 	if (zoomed_cubepos != camera_zoomed_origin) {
 		camera_zoomed_origin = zoomed_cubepos;
-// TODO: Move nodes of Cubes!
+
+		// Update actual positions of NodeWrappers
+		for (unsigned i = 0; i < nodewrappers.Size(); ++ i) {
+			NodeWrapper* nodewrapper = nodewrappers[i];
+			nodewrapper->updateActualPosition(zoomed_cubepos, zoom, space->getCubeWidth());
+		}
 	}
 
 	camera_node->SetPosition(zoomed_pos);

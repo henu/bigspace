@@ -1,6 +1,8 @@
 #ifndef BIGSPACE_LAYER_HPP
 #define BIGSPACE_LAYER_HPP
 
+#include "nodewrapper.hpp"
+
 #include <Urho3D/Graphics/Material.h>
 #include <Urho3D/Graphics/Viewport.h>
 #include <Urho3D/Scene/Scene.h>
@@ -18,9 +20,15 @@ public:
 
 	Layer(Space* space, unsigned zoom, float near_clip, float far_clip);
 
+	inline unsigned getZoom() const { return zoom; }
+	inline Space* getSpace() const { return space; }
+	inline Urho3D::IntVector3 getCameraZoomedOrigin() const { return camera_zoomed_origin; }
+
 	// Easy method to create sky. This should only
 	// be called to Layer that has the biggest zoom.
 	void createSkybox(Urho3D::Material* skybox_mat);
+
+	NodeWrapper* createNodeWrapper();
 
 	// Called by Space
 	Urho3D::Viewport* getOrCreateViewport();
@@ -28,6 +36,8 @@ public:
 	void updateCamera(Urho3D::Vector3 const& camera_pos, Urho3D::IntVector3 const& camera_cubepos, Urho3D::Quaternion const& camera_rot);
 
 private:
+
+	typedef Urho3D::Vector<Urho3D::SharedPtr<NodeWrapper> > NodeWrappers;
 
 	Space* space;
 
@@ -38,6 +48,8 @@ private:
 	Urho3D::Node* camera_node;
 	Urho3D::SharedPtr<Urho3D::Viewport> camera_viewport;
 	Urho3D::IntVector3 camera_zoomed_origin;
+
+	NodeWrappers nodewrappers;
 };
 
 }

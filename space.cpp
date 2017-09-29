@@ -60,6 +60,51 @@ void Space::destroyViewports()
 	}
 }
 
+void Space::addRelativeMovementToCamera(Urho3D::Vector3 const& movement)
+{
+	Urho3D::Vector3 absolute_movement = camera_rot* movement;
+	addAbsoluteMovementToCamera(absolute_movement);
+}
+
+void Space::addAbsoluteMovementToCamera(Urho3D::Vector3 const& movement)
+{
+	camera_pos += movement;
+
+	// Check if camera has moved to another cube
+	if (camera_pos.x_ < 0) {
+		int movement_cubes = Urho3D::FloorToInt(-camera_pos.x_ / cube_width);
+		camera_pos.x_ += cube_width * movement_cubes;
+		camera_cubepos.x_ -= movement_cubes;
+	} else if (camera_pos.x_ >= cube_width) {
+		int movement_cubes = Urho3D::FloorToInt(camera_pos.x_ / cube_width) - 1;
+		camera_pos.x_ -= cube_width * movement_cubes;
+		camera_cubepos.x_ += movement_cubes;
+	}
+	if (camera_pos.y_ < 0) {
+		int movement_cubes = Urho3D::FloorToInt(-camera_pos.y_ / cube_width);
+		camera_pos.y_ += cube_width * movement_cubes;
+		camera_cubepos.y_ -= movement_cubes;
+	} else if (camera_pos.y_ >= cube_width) {
+		int movement_cubes = Urho3D::FloorToInt(camera_pos.y_ / cube_width) - 1;
+		camera_pos.y_ -= cube_width * movement_cubes;
+		camera_cubepos.y_ += movement_cubes;
+	}
+	if (camera_pos.z_ < 0) {
+		int movement_cubes = Urho3D::FloorToInt(-camera_pos.z_ / cube_width);
+		camera_pos.z_ += cube_width * movement_cubes;
+		camera_cubepos.z_ -= movement_cubes;
+	} else if (camera_pos.z_ >= cube_width) {
+		int movement_cubes = Urho3D::FloorToInt(camera_pos.z_ / cube_width) - 1;
+		camera_pos.z_ -= cube_width * movement_cubes;
+		camera_cubepos.z_ += movement_cubes;
+	}
+}
+
+void Space::rotateCamera(Urho3D::Quaternion const& rot)
+{
+	camera_rot = camera_rot * rot;
+}
+
 void Space::updateCameras()
 {
 	for (Layers::iterator i = layers.begin(); i != layers.end(); ++ i) {

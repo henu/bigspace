@@ -28,6 +28,11 @@ public:
 	void createViewports();
 	void destroyViewports();
 
+	void addRelativeMovementToCamera(Urho3D::Vector3 const& movement);
+	void addAbsoluteMovementToCamera(Urho3D::Vector3 const& movement);
+
+	void rotateCamera(Urho3D::Quaternion const& rot);
+
 	void updateCameras();
 
 private:

@@ -29,6 +29,7 @@ public:
 	void createSkybox(Urho3D::Material* skybox_mat);
 
 	NodeWrapper* createNodeWrapper();
+	void destroyNodeWrapper(NodeWrapper* nodewrapper);
 
 	// Called by Space
 	Urho3D::Viewport* getOrCreateViewport();
@@ -37,7 +38,7 @@ public:
 
 private:
 
-	typedef Urho3D::Vector<Urho3D::SharedPtr<NodeWrapper> > NodeWrappers;
+	typedef Urho3D::HashSet<Urho3D::SharedPtr<NodeWrapper> > NodeWrappers;
 
 	Space* space;
 

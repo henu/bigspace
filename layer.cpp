@@ -39,9 +39,15 @@ void Layer::createSkybox(Urho3D::Material* skybox_mat)
 NodeWrapper* Layer::createNodeWrapper()
 {
 	Urho3D::SharedPtr<NodeWrapper> nodewrapper(new NodeWrapper(this, scene->CreateChild()));
-	nodewrappers.Push(nodewrapper);
+	nodewrappers.Insert(nodewrapper);
 	nodewrapper->updateActualPosition(camera_zoomed_origin, zoom, space->getCubeWidth());
 	return nodewrapper;
+}
+
+void Layer::destroyNodeWrapper(NodeWrapper* nodewrapper)
+{
+	nodewrapper->getNode()->Remove();
+	nodewrappers.Erase(Urho3D::SharedPtr<NodeWrapper>(nodewrapper));
 }
 
 Urho3D::Viewport* Layer::getOrCreateViewport()
@@ -70,8 +76,8 @@ void Layer::updateCamera(Urho3D::Vector3 const& camera_pos, Urho3D::IntVector3 c
 		camera_zoomed_origin = zoomed_cubepos;
 
 		// Update actual positions of NodeWrappers
-		for (unsigned i = 0; i < nodewrappers.Size(); ++ i) {
-			NodeWrapper* nodewrapper = nodewrappers[i];
+		for (NodeWrappers::Iterator i = nodewrappers.Begin(); i != nodewrappers.End(); ++ i) {
+			NodeWrapper* nodewrapper = *i;
 			nodewrapper->updateActualPosition(zoomed_cubepos, zoom, space->getCubeWidth());
 		}
 	}

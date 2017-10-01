@@ -28,6 +28,8 @@ public:
 	void createViewports();
 	void destroyViewports();
 
+	inline Urho3D::IntVector3 const& getCameraCubePosition() const { return camera_cubepos; }
+
 	void addRelativeMovementToCamera(Urho3D::Vector3 const& movement);
 	void addAbsoluteMovementToCamera(Urho3D::Vector3 const& movement);
 

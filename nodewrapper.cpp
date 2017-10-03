@@ -20,6 +20,11 @@ void NodeWrapper::setPosition(Urho3D::IntVector3 const& cubepos, Urho3D::Vector3
 	updateActualPosition(layer->getCameraZoomedOrigin(), layer->getZoom(), layer->getSpace()->getCubeWidth());
 }
 
+Urho3D::IntVector3 NodeWrapper::getCubePosRelToCamera() const
+{
+	return cubepos - layer->getSpace()->getCameraCubePosition();
+}
+
 void NodeWrapper::updateActualPosition(Urho3D::IntVector3 const& origin, unsigned zoom, float cube_width)
 {
 	// Calculate zoomed position

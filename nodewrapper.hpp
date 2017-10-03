@@ -20,6 +20,8 @@ public:
 
 	void setPosition(Urho3D::IntVector3 const& cubepos, Urho3D::Vector3 const& pos);
 
+	Urho3D::IntVector3 getCubePosRelToCamera() const;
+
 	void updateActualPosition(Urho3D::IntVector3 const& origin, unsigned zoom, float cube_width);
 
 private:

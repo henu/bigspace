@@ -28,6 +28,10 @@ public:
 	// be called to Layer that has the biggest zoom.
 	void createSkybox(Urho3D::Material* skybox_mat);
 
+	// Gets scene. Use this with caution, as nodes
+	// created here will not move with other space.
+	inline Urho3D::Scene* getScene() { return scene; }
+
 	NodeWrapper* createNodeWrapper();
 	void destroyNodeWrapper(NodeWrapper* nodewrapper);
 

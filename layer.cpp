@@ -12,9 +12,10 @@
 namespace BigSpace
 {
 
-Layer::Layer(Space* space, unsigned zoom, float near_clip, float far_clip) :
+Layer::Layer(Space* space, Urho3D::RenderPath* renderpath, unsigned zoom, float near_clip, float far_clip) :
 Urho3D::Object(space->GetContext()),
 space(space),
+renderpath(renderpath),
 zoom(zoom)
 {
 	scene = new Urho3D::Scene(context_);

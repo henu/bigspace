@@ -6,6 +6,7 @@
 #include <Urho3D/Math/MathDefs.h>
 #include <Urho3D/Resource/ResourceCache.h>
 #include <Urho3D/Resource/XMLFile.h>
+#include <Urho3D/Graphics/RenderPath.h>
 
 namespace BigSpace
 {
@@ -16,7 +17,7 @@ cube_width(cube_width)
 {
 }
 
-Layer* Space::createLayer(unsigned zoom, float near_clip, float far_clip)
+Layer* Space::createLayer(Urho3D::RenderPath* renderpath, unsigned zoom, float near_clip, float far_clip)
 {
 	if (layers.find(zoom) != layers.end()) {
 		throw std::runtime_error("Layer with that zoom level already exists!");
@@ -25,7 +26,7 @@ Layer* Space::createLayer(unsigned zoom, float near_clip, float far_clip)
 		throw std::runtime_error("Layer zoom must be power of two!");
 	}
 
-	Urho3D::SharedPtr<Layer> new_layer(new Layer(this, zoom, near_clip, far_clip));
+	Urho3D::SharedPtr<Layer> new_layer(new Layer(this, renderpath, zoom, near_clip, far_clip));
 	layers[zoom] = new_layer;
 
 	return new_layer;
@@ -34,15 +35,12 @@ Layer* Space::createLayer(unsigned zoom, float near_clip, float far_clip)
 void Space::createViewports()
 {
 	Urho3D::Renderer* renderer = GetSubsystem<Urho3D::Renderer>();
-	Urho3D::ResourceCache* resources = GetSubsystem<Urho3D::ResourceCache>();
-
-	Urho3D::XMLFile* renderpath_file = resources->GetResource<Urho3D::XMLFile>("RenderPaths/ForwardNoColorClear.xml");
 
 	unsigned viewport_id = 0;
 	for (Layers::reverse_iterator i = layers.rbegin(); i != layers.rend(); ++ i) {
 		Layer* layer = i->second;
 		Urho3D::Viewport* viewport = layer->getOrCreateViewport();
-		viewport->SetRenderPath(renderpath_file);
+		viewport->SetRenderPath(layer->getRenderPath());
 		renderer->SetViewport(viewport_id ++, viewport);
 	}
 }

@@ -22,7 +22,7 @@ public:
 
 	inline float getCubeWidth() const { return cube_width; }
 
-	Layer* createLayer(unsigned zoom, float near_clip, float far_clip);
+	Layer* createLayer(Urho3D::RenderPath* renderpath, unsigned zoom, float near_clip, float far_clip);
 
 	// TODO: Call these automatically!
 	void createViewports();

@@ -5,6 +5,7 @@
 
 #include <Urho3D/Graphics/Material.h>
 #include <Urho3D/Graphics/Viewport.h>
+#include <Urho3D/Graphics/RenderPath.h>
 #include <Urho3D/Scene/Scene.h>
 
 namespace BigSpace
@@ -18,7 +19,7 @@ class Layer : public Urho3D::Object
 
 public:
 
-	Layer(Space* space, unsigned zoom, float near_clip, float far_clip);
+	Layer(Space* space, Urho3D::RenderPath* renderpath, unsigned zoom, float near_clip, float far_clip);
 
 	inline unsigned getZoom() const { return zoom; }
 	inline Space* getSpace() const { return space; }
@@ -31,6 +32,11 @@ public:
 	// Gets scene. Use this with caution, as nodes
 	// created here will not move with other space.
 	inline Urho3D::Scene* getScene() { return scene; }
+
+	inline Urho3D::RenderPath* getRenderPath()
+	{
+		return renderpath;
+	}
 
 	NodeWrapper* createNodeWrapper();
 	void destroyNodeWrapper(NodeWrapper* nodewrapper);
@@ -47,6 +53,8 @@ private:
 	Space* space;
 
 	Urho3D::SharedPtr<Urho3D::Scene> scene;
+
+	Urho3D::SharedPtr<Urho3D::RenderPath> renderpath;
 
 	unsigned zoom;
 
